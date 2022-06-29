@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { response } from 'express'
 import { NodemailerMailAdapter } from './adapters/nodemailer/nodemailer-mail-adapter';
 import { PrismaFeedbacksRespository } from './repositories/prisma/prisma-feedbacks-repository';
 import { SubmitFeedbackUseCase } from './use-cases/submit-feedback-use-case';
@@ -18,12 +18,16 @@ routes.post('/feedbacks',async (req,res)=>{
         nodemailerMailAdapter
     )
 
+    try{
 
-    await submitFeedbackUseCase.execute({
-        type,
-        comment,
-        screenshot
-    })
-
-    return res.status(201).send()
+        await submitFeedbackUseCase.execute({
+            type,
+            comment,
+            screenshot
+        })
+    
+        return res.status(201).send()
+    }catch(err){
+        return  res.status(401).json(`${err}`)
+    }
 })
